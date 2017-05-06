@@ -61,7 +61,7 @@ class Product_Pics(Base):
     __tablename__ = "product_pics"
 
     id = Column(Integer, primary_key=True)
-    picture = Column(TEXT(250), nullable=False)
+    picture = Column(TEXT(250))
     product_id = Column(Integer, ForeignKey('product.id'))
     product = relationship(Product)
 
