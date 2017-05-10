@@ -1,1 +1,18 @@
-<h1>addSubCategory</h1>
+{% extends 'layout.html' %}{% block content %}
+<div class="container">
+    <h1>SubCategory <small>Create New</small></h1>
+    <div class="col-md-8 col-sm-12">
+        <form method="POST">
+            <div class="form-group">
+                <label for="sub_Name">Name</label>
+                <input name="sub_Name" class="form-control" type="text" placeholder="Name of SubCategory">
+                <label for="sub_Description">Description</label>
+                <textarea name="sub_Description" class="form-control" maxlength="250" rows="3" placeholder="Description of the SubCategory"></textarea>
+                <label for="category">Category</label>
+                <input type="text" name="category" class="form-control" disabled placeholder="{{cat_Name}}">
+            </div>
+            <button class="btn btn-default" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

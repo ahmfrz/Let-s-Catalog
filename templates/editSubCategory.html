@@ -1,1 +1,20 @@
-<h1>Edit sub</h1>
+{% extends 'layout.html' %}{% block content %}
+<div class="container add-category">
+    <h1>{{subcategory.name}} <small>Edit SubCategory</small></h1>
+    <div class="col-md-8 col-sm-12">
+        <form method="POST">
+            <div class="form-group">
+                <label for="sub_name">Name <span class="mandatory">*</span></label>
+                <input type="text" class="form-control" name="sub_name" placeholder= {{subcategory.name}}>
+
+                <label for="sub_description">Description <span class="mandatory">*</span></label>
+                <textarea class="form-control" name="sub_description" maxlength="500" rows="3" placeholder="{{subcategory.description}}"></textarea>
+
+                <label for="cat_name">Category</label>
+                <input type="text" class="form-control" name="cat_name" disabled value="{{category_name}}">
+            </div>
+            {% include 'partial_edit_complete.html' %}
+        </form>
+    </div>
+</div>
+{% endblock %}

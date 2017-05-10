@@ -1,1 +1,34 @@
-<h1>Edit item</h1>
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container add-category">
+    <h1>{{product.name}} <small>Edit Product</small></h1>
+    <div class="col-md-8 col-sm-12">
+        <form method="POST">
+            <div class="form-group">
+                <label for="product_name">Name <span class="mandatory">*</span></label>
+                <input type="text" class="form-control" name="product_name" placeholder= {{product.name}}>
+
+                <label for="product_description">Description <span class="mandatory">*</span></label>
+                <textarea class="form-control" name="product_description" maxlength="500" rows="3" placeholder="{{product.description}}"></textarea>
+                <label for="brand_Name">Brand<span class="mandatory">*</span></label>
+                <input type="text" name="brand_Name" class="form-control" placeholder="{{brand.name}}">
+                <label for="model_Name">Model<span class="mandatory">*</span></label>
+                <input type="text" name="model_Name" class="form-control" placeholder="{{product_specs.model_name}}">
+                <label for="model_Number">Model Number<span class="mandatory">*</span></label>
+                <input type="text" name="model_Number" class="form-control" placeholder="{{product_specs.model_number}}">
+                <label for="product_Color">Color<span class="mandatory">*</span></label>
+                <input type="text" name="product_Color" class="form-control" placeholder="{{product_specs.color}}">
+                <label for="product_Pic">Picture</label>
+                <input type="text" name="product_Pic" class="form-control" placeholder="{{product_pic.picture}}">
+
+
+                <label for="subcat_name">SubCategory</label>
+                <input type="text" class="form-control" name="subcat_name" disabled value="{{subcategory_name}}">
+                <label for="cat_name">Category</label>
+                <input type="text" class="form-control" name="cat_name" disabled value="{{category_name}}">
+            </div>
+            {% include 'partial_edit_complete.html' %}
+        </form>
+    </div>
+</div>
+{% endblock %}

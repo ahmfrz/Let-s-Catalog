@@ -1,1 +1,62 @@
-<h1>Show item</h1>
+{% extends 'layout.html' %} {% block content %}
+<div class="container">
+    <p><a href={{url_for('showCategory', category=category.name)}} >{{category.name}}</a> > <a href={{url_for('showSubCategory', category_param=category.name, subcategory_param=subcategory.name)}} >{{subcategory.name}}</a> > <a href={{url_for('showProduct', category_param=category.name, subcategory_param=subcategory.name, product_param=product.name)}}>{{product.name}}</a></p>
+    <h1 class="jumbotron">{{product.name}}</h1>
+    <hr>
+    {% if session['username'] %}
+    <div class="row">
+        <div class="text-right"><a href={{url_for('editProduct', category_param=category.name, subcategory_param=subcategory.name, product_param=product.id)}}><span class="glyphicon glyphicon-pencil"></span> Edit</a></div>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <img src="http://lorempixel.com/1600/1200/" class="img-responsive">
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <table class="product-font">
+                <tr>
+                    <td><b>Name:</b></td>
+                </tr>
+                <tr>
+                    <td>{{product.name}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><b>Description:</b></td>
+                </tr>
+                <tr>
+                    <td colspan="2" valign="top">{{product.description}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-3 col-sm-1"></div>
+        <div class="col-md-6 col-sm-10">
+            <table class="table table-responsive table-bordered table-striped product-font">
+                <tr>
+                    <td>Name</td>
+                    <td>{{product.name}}</td>
+                </tr>
+                <tr>
+                    <td>Brand</td>
+                    <td>{{brand.name}}</td>
+                </tr>
+                <tr>
+                    <td>Model</td>
+                    <td>{{product_specs.model_name}}</td>
+                </tr>
+                <tr>
+                    <td>Model Number</td>
+                    <td>{{product_specs.model_number}}</td>
+                </tr>
+                <tr>
+                    <td>Color</td>
+                    <td>{{product_specs.color}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-3 col-sm-1"></div>
+    </div>
+</div>
+{% endblock %}

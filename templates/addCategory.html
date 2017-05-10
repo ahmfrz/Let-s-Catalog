@@ -1,5 +1,14 @@
-<h1>Add Category</h1>
-<form method="POST">
-<input type="text" name="CategoryName" placeholder="New Category Name">
-<button type="submit">Submit</button>
-</form>
+{% extends 'layout.html' %} {% block content %}
+<div class="container add-category">
+    <h1>Category <small>Create New</small></h1>
+    <div class="col-md-8 col-sm-12">
+        <form method="POST">
+            <div class="form-group">
+                <label for="cat_name">Name</label>
+                <input type="text" class="form-control" placeholder="Category Name" name="cat_name" placeholder="Name of Category">
+            </div>
+            <button class="btn btn-default" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
