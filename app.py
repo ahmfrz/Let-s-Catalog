@@ -37,8 +37,24 @@ def db_delete_commit(entity):
 @app.route('/index')
 @app.route('/')
 def home():
+    categories = dbsession.query(Category).limit(3)
+    subcategories = dbsession.query(SubCategory).limit(3)
+    products = dbsession.query(Product).limit(3)
+    prod = dbsession.query(Product).join(Product_Pics).add_columns(Product.subcategory_id, Product.name, Product.description, Product_Pics.picture).limit(3)
+    print prod
+    sub = dbsession.query(SubCategory).join(prod).add_columns(SubCategory.name, Product.name, Product.description, Product_Pics.picture).limit(3).subquery()
+    cat = dbsession.query(Category, SubCategory, Product, Product_Pics).join(SubCategory, Product, Product_Pics).limit(3).all()
+    print "######################"
+    print len(cat)
+    print "######################"
+
+    # output = ""
+    # for item in cat:
+        # output += item.name
+    # print output
+    # return output
     session['username'] = "Blah"
-    return render_template('home.html')
+    return render_template('home.html', items=cat, count=len(cat), categories = cat[0])
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -47,14 +63,15 @@ def login():
     return render_template('login.html')
 
 # CRUD operations for category
-@app.route('/catalog/<category>/')
-def showCategory(category, category_id):
-    output = ""
-    result = dbsession.query(SubCategory).filter_by(name=category).all()
-    if result:
-        for item in range(len(result)):
-            output += "<h1>" + result[item].name + "</h1><br>"
-    return output#render_template('category.html')
+@app.route('/catalog/<category_param>/')
+def showCategory(category_param):
+    category = dbsession.query(Category).filter_by(name=category_param).first()
+    if category:
+        subcategories = dbsession.query(SubCategory).filter_by(category_id=category.id).all()
+        return render_template('showCategory.html', category=category, subcategories=subcategories)
+    else:
+        flash('Category not found')
+        return redirect(url_for('home'))
 
 @app.route('/catalog/add_category', methods=['GET', 'POST'])
 @user_loggedin
@@ -65,7 +82,7 @@ def addCategory():
             newCategory = Category(name=categoryName)
             db_add_commit(newCategory)
             flash('New category added: %s' % newCategory.name)
-            return render_template('home.html')
+            return redirect(url_for('home'))
         else:
             flash('Category name must not be empty')
             return render_template('addCategory.html')
