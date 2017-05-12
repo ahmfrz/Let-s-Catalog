@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, make_response, render_template, jsonify, request, redirect, url_for, session, flash
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from database_setup import Base, Product, Product_Pics, Product_Specs, Category, Brand, SubCategory
@@ -34,33 +34,31 @@ def db_delete_commit(entity):
     dbsession.delete(entity)
     dbsession.commit()
 
+def checkIfCategoryExists(categoryName):
+    return dbsession.query(Category).filter_by(name=categoryName).first()
+
+def checkIfSubCategoryExists(category_id, subcategoryName):
+    return dbsession.query(SubCategory).filter_by(name=subcategoryName,category_id=category_id).first()
+
+def checkIfProductExists(subcategory_id, productName):
+    return dbsession.query(Product).filter_by(name=productName,subcategory_id=subcategory_id).first()
+
 @app.route('/index')
 @app.route('/')
 def home():
-    categories = dbsession.query(Category).limit(3)
-    subcategories = dbsession.query(SubCategory).limit(3)
-    products = dbsession.query(Product).limit(3)
-    prod = dbsession.query(Product).join(Product_Pics).add_columns(Product.subcategory_id, Product.name, Product.description, Product_Pics.picture).limit(3)
-    print prod
-    sub = dbsession.query(SubCategory).join(prod).add_columns(SubCategory.name, Product.name, Product.description, Product_Pics.picture).limit(3).subquery()
-    cat = dbsession.query(Category, SubCategory, Product, Product_Pics).join(SubCategory, Product, Product_Pics).limit(3).all()
-    print "######################"
-    print len(cat)
-    print "######################"
-
-    # output = ""
-    # for item in cat:
-        # output += item.name
-    # print output
-    # return output
+    items = dbsession.query(Category, SubCategory, Product, Product_Pics).join(SubCategory, Product, Product_Pics).limit(3).all()
     session['username'] = "Blah"
-    return render_template('home.html', items=cat, count=len(cat), categories = cat[0])
+    return render_template('home.html', items=items, count=len(items))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         return redirect(url_for(session['last_URL']))
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    return redirect(url_for('home'))
 
 # CRUD operations for category
 @app.route('/catalog/<category_param>/')
@@ -79,10 +77,14 @@ def addCategory():
     if request.method == 'POST':
         categoryName = request.form.get("cat_name")
         if categoryName:
-            newCategory = Category(name=categoryName)
-            db_add_commit(newCategory)
-            flash('New category added: %s' % newCategory.name)
-            return redirect(url_for('home'))
+            if not checkIfCategoryExists(categoryName):
+                newCategory = Category(name=categoryName)
+                db_add_commit(newCategory)
+                flash('New category added: %s' % newCategory.name)
+                return redirect(url_for('home'))
+            else:
+                flash('Category already exists')
+                return render_template('addCategory.html')
         else:
             flash('Category name must not be empty')
             return render_template('addCategory.html')
@@ -137,6 +139,20 @@ def showSubCategory(category_param, subcategory_param):
         flash('Category not found')
     return redirect(url_for('home'))
 
+@app.route('/catalog/<category_param>/<subcategory_param>/brands')
+def showSubCategoryBrand(category_param, subcategory_param):
+    category = dbsession.query(Category).filter_by(name=category_param).first()
+    if category:
+        subcategory = dbsession.query(SubCategory).filter_by(name=subcategory_param, category_id=category.id).first()
+        if subcategory:
+            brands = dbsession.query(Brand).filter_by(subcategory_id=subcategory.id).all()
+            return render_template('showBrand.html', category=category, subcategory=subcategory, brands=brands)
+        else:
+            flash('Sub-Category not found')
+    else:
+        flash('Category not found')
+    return redirect(url_for('home'))
+
 
 @app.route('/catalog/<category_param>/add_subcategory', methods=['GET', 'POST'])
 @user_loggedin
@@ -155,10 +171,14 @@ def addSubCategory(category_param):
 
             # Check if the user has entered name and description
             if subcategory_Name and subcategory_Desc:
-                subcategory = SubCategory(name=subcategory_Name, description=subcategory_Desc, category_id=category.id)
-                db_add_commit(subcategory)
-                flash('Added %s > %s' % (category.name, subcategory_Name))
-                return redirect(url_for('home'))
+                if not checkIfSubCategoryExists(category.id, subcategory_Name):
+                    subcategory = SubCategory(name=subcategory_Name, description=subcategory_Desc, category_id=category.id)
+                    db_add_commit(subcategory)
+                    flash('Added %s > %s' % (category.name, subcategory_Name))
+                    return redirect(url_for('home'))
+                else:
+                    flash('Sub-Category already exists')
+                    return render_template('addSubCategory.html', cat_Name=category.name)
             else:
                 flash('Please provide a name and description for subcategory')
                 return render_template('addSubCategory.html', cat_Name=category.name)
@@ -227,6 +247,24 @@ def showProduct(category_param, subcategory_param, product_param):
         flash('Invalid Category: %s' % category_param)
     return redirect(url_for('home'))
 
+@app.route('/catalog/<category_param>/<subcategory_param>/<brand_param>/products')
+def showProductsByBrand(category_param, subcategory_param, brand_param):
+    category = dbsession.query(Category).filter_by(name=category_param).first()
+    if category:
+        subcategory = dbsession.query(SubCategory).filter_by(name=subcategory_param, category_id=category.id).first()
+        if subcategory:
+            brand = dbsession.query(Brand).filter_by(name=brand_param, subcategory_id=subcategory.id).first()
+            if brand:
+                products = dbsession.query(Product).filter_by(brand_id=brand.id, subcategory_id=subcategory.id).all()
+                return render_template('showProductsByBrand.html', category=category, subcategory=subcategory, products=products)
+            else:
+                flash('Brand not found')
+        else:
+            flash('Sub-Category not found')
+    else:
+        flash('Category not found')
+    return redirect(url_for('home'))
+
 @app.route('/catalog/<category_param>/<subcategory_param>/add_product', methods=['GET','POST'])
 @user_loggedin
 def addProduct(category_param, subcategory_param):
@@ -256,21 +294,25 @@ def addProduct(category_param, subcategory_param):
             product_color = request.form.get('product_Color')
             # Check if the user has entered name and description
             if product_name and product_desc and model_number and model_name and product_color and brand_name:
-                # Check if brand already exists
-                brand = dbsession.query(Brand).filter_by(name=brand_name).first()
-                if not brand:
-                    brand = Brand(name=brand_name, subcategory_id=subcategory.id)
-                    db_add_commit(brand)
-                product = Product(name=product_name, description=product_desc, subcategory_id=subcategory.id, brand_id=brand.id)
-                db_add_commit(product)
-                if product_pic:
-                    pic = Product_Pics(picture=product_pic, product_id=product.id)
-                    db_add_commit(pic)
-                product_specs = Product_Specs(model_name=model_name, model_number=model_number,
-                    color=product_color, product_id=product.id)
-                db_add_commit(product_specs)
-                flash('Added %s > %s > %s' % (category.name, subcategory.name, product.name))
-                return redirect(url_for('home'))
+                if not checkIfProductExists(subcategory.id, product_name):
+                    # Check if brand already exists
+                    brand = dbsession.query(Brand).filter_by(name=brand_name).first()
+                    if not brand:
+                        brand = Brand(name=brand_name, subcategory_id=subcategory.id)
+                        db_add_commit(brand)
+                    product = Product(name=product_name, description=product_desc, subcategory_id=subcategory.id, brand_id=brand.id)
+                    db_add_commit(product)
+                    if product_pic:
+                        pic = Product_Pics(picture=product_pic, product_id=product.id)
+                        db_add_commit(pic)
+                    product_specs = Product_Specs(model_name=model_name, model_number=model_number,
+                        color=product_color, product_id=product.id)
+                    db_add_commit(product_specs)
+                    flash('Added %s > %s > %s' % (category.name, subcategory.name, product.name))
+                    return redirect(url_for('home'))
+                else:
+                    flash('Product already exists')
+                    return render_template('addProduct.html')
             else:
                 flash('Fields marked with * are mandatory')
                 return render_template('addProduct.html')
@@ -299,7 +341,7 @@ def deleteProduct(category_param, subcategory_param, product_id):
 @user_loggedin
 def editProduct(category_param, subcategory_param, product_param):
     category = dbsession.query(Category).filter_by(name=category_param).first()
-    subcategory = category and dbsession.query(SubCategory).filter_by(name=subcategory_id, category_id=category.id).first()
+    subcategory = category and dbsession.query(SubCategory).filter_by(name=subcategory_param, category_id=category.id).first()
     product = subcategory and dbsession.query(Product).filter_by(name=product_param, subcategory_id=subcategory.id).first()
     if not product:
         flash('Category/SubCategory/Product not found')
@@ -347,7 +389,55 @@ def editProduct(category_param, subcategory_param, product_param):
 # JSON
 @app.route('/catalog.json')
 def getJSON():
-    return "JSON"
+    categories = dbsession.query(Category).all()
+    dic = {}
+    cdic = []
+    sdic = []
+    for item in categories:
+        subcategory = dbsession.query(SubCategory).filter_by(category_id=item.id).all()
+        temp = {'name': item.name, 'data': [i.serialize() for i in subcategory]}
+        cdic.append(temp)
+        for sub in subcategory:
+            brand = dbsession.query(Brand).filter_by(subcategory_id=sub.id).all()
+            temp = {'name': sub.name, 'data': [i.serialize() for i in brand]}
+            sdic.append(temp)
+    dic["Categories"] = cdic
+    dic["Brands"] = sdic
+    return jsonify(dic)
+
+@app.route('/catalog/categories.json')
+def getCategoryJSON():
+    categories = dbsession.query(Category).all()
+    if not categories:
+        return make_response(json.dumps('Invalid URL'), 401)
+    return jsonify(categories=[i.serialize() for i in categories])
+
+
+@app.route('/catalog/<category_param>/subcategories.json')
+def getSubCategoryJSON(category_param):
+    category = dbsession.query(Category).first()
+    subcategories = category and dbsession.query(SubCategory).filter_by(category_id=category.id).all()
+    if not subcategories:
+        return make_response(json.dumps('Invalid URL'), 401)
+    return jsonify(subcategories=[i.serialize() for i in subcategories])
+
+@app.route('/catalog/<category_param>/<subcategory_param>/brands.json')
+def getBrandJSON(category_param, subcategory_param):
+    category = dbsession.query(Category).first()
+    subcategory = category and dbsession.query(SubCategory).filter_by(name=subcategory_param, category_id=category.id).first()
+    brands = subcategory and dbsession.query(Brand).filter_by(subcategory_id=subcategory.id).all()
+    if not brands:
+        return make_response(json.dumps('Invalid URL'), 401)
+    return jsonify(brands=[i.serialize() for i in brands])
+
+@app.route('/catalog/<category_param>/<subcategory_param>/products.json')
+def getProductJSON(category_param, subcategory_param):
+    category = dbsession.query(Category).first()
+    subcategory = category and dbsession.query(SubCategory).filter_by(name= subcategory_param,category_id=category.id).first()
+    products = subcategory and dbsession.query(Product).filter_by(subcategory_id=subcategory.id).all()
+    if not products:
+        return make_response(json.dumps('Invalid URL'), 401)
+    return jsonify(products=[i.serialize() for i in products])
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

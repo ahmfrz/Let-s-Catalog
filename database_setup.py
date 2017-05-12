@@ -17,6 +17,12 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
 
+    def serialize(self):
+        return {
+        'id': self.id,
+        'name': self.name
+        }
+
 
 class SubCategory(Base):
     ''' Defines sub category table and columns '''
@@ -29,6 +35,14 @@ class SubCategory(Base):
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
 
+    def serialize(self):
+        return {
+        'id': self.id,
+        'name': self.name,
+        'description': self.description,
+        'category_id':self.category_id
+        }
+
 
 class Brand(Base):
     ''' Defines brand table and columns '''
@@ -39,6 +53,13 @@ class Brand(Base):
     name = Column(String(250), nullable=False)
     subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
     subcategory = relationship(SubCategory)
+
+    def serialize(self):
+        return {
+        'id': self.id,
+        'name': self.name,
+        'subcategory_id' : self.subcategory_id
+        }
 
 
 class Product(Base):
@@ -54,6 +75,14 @@ class Product(Base):
     brand_id = Column(Integer, ForeignKey('brand.id'))
     brand = relationship(Brand)
 
+    def serialize(self):
+        return {
+        'id': self.id,
+        'name': self.name,
+        'description' : self.description,
+        'brand_id' : self.brand_id,
+        'subcategory_id' : self.subcategory_id
+        }
 
 class Product_Pics(Base):
     ''' Defines product pics table and columns '''
