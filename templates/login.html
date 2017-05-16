@@ -1,1 +1,23 @@
-<h1>LOGIN</h1>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="//apis.google.com/js/platform.js?onload=start"></script>
+    <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+    <script src={{url_for( 'static', filename='js/script.js' )}}></script>
+</head>
+
+<body>
+    <!-- Google -->
+    <div id="signinButton">
+        <meta id="state" data-value={{STATE}}>
+        <span class="g-signin" data-scope="openid email" data-clientid="548000053536-2j7rcq7pfm245tfo9c1fiopd3fv8qbok.apps.googleusercontent.com" data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="signInCallback" data-approvalprompt="force"></span>
+    </div>
+
+    <div id="result"></div>
+</body>
+
+</html>

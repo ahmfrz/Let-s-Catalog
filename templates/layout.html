@@ -31,7 +31,7 @@
                             <li><a href={{url_for( "home")}}>Home</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Catalog <span class="caret"></span></a>
-                                <ul class="catalog dropdown-menu">
+                                <ul id="nav-catalog" class="catalog dropdown-menu">
                                     <li>
                                         <table class="table table-hover">
                                             <tr id="nav-categories">
@@ -60,10 +60,13 @@
                             <li><a href="#contact">Contact</a></li>
                         </ul>
                         {% if not session['username'] %}
-                        <div class="login pull-right"><a class="login-link" href={{url_for( 'login')}}>Login</div>
-                            {% else %}
-                            <div class="login pull-right"><a class="login-link" href={{url_for( 'logout')}}>Logout</div>
-                            {% endif %}
+                        <div class="login pull-right"><a class="login-link" href={{url_for( 'login')}}>Login</a></div>
+                        {% else %}
+                        <div class="login pull-right">
+                            {{session['username']}} |
+                            <a class="login-link" href={{url_for( 'logout')}}>Logout</a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </nav>
@@ -81,25 +84,26 @@
     <!-- FOOTER -->
     <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>
-                            <p>© 2017 Company, Inc. · <a href="#">Privacy</a> · <a href="#">Terms</a></p>
-                            </footer>
-                        </div>
-                        <!-- /.container -->
-                        <!-- Bootstrap core JavaScript
+        <p>© 2017 Company, Inc. · <a href="#">Privacy</a> · <a href="#">Terms</a></p>
+    </footer>
+    </div>
+    <!-- /.container -->
+    <!-- Bootstrap core JavaScript
     ================================================== -->
-                        <!-- Placed at the end of the document so the pages load faster -->
-                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-                        <script>
-                        window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')
-                        </script>
-                        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-                        <script src={{url_for( 'static', filename='js/script.js' )}}></script>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500" preserveAspectRatio="none" style="display: none; visibility: hidden; position: absolute; top: -100%; left: -100%;">
-                            <defs>
-                                <style type="text/css"></style>
-                            </defs>
-                            <text x="0" y="25" style="font-weight:bold;font-size:25pt;font-family:Arial, Helvetica, Open Sans, sans-serif">500x500</text>
-                        </svg>
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//apis.google.com/js/platform.js?onload=start"></script>
+    <script>
+    window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src={{url_for( 'static', filename='js/script.js' )}}></script>
+    <svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500" preserveAspectRatio="none" style="display: none; visibility: hidden; position: absolute; top: -100%; left: -100%;">
+        <defs>
+            <style type="text/css"></style>
+        </defs>
+        <text x="0" y="25" style="font-weight:bold;font-size:25pt;font-family:Arial, Helvetica, Open Sans, sans-serif">500x500</text>
+    </svg>
 </body>
 
 </html>

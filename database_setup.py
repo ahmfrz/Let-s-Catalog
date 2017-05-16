@@ -9,6 +9,16 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
+class User(Base):
+    ''' Defines product specs table and columns '''
+
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+    email = Column(String(100), nullable=False)
+    picture = Column(String(250))
+
 class Category(Base):
     ''' Defines category table and columns '''
 
@@ -16,6 +26,8 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     def serialize(self):
         return {
@@ -34,6 +46,8 @@ class SubCategory(Base):
     description = Column(TEXT(500))
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     def serialize(self):
         return {
@@ -53,6 +67,8 @@ class Brand(Base):
     name = Column(String(250), nullable=False)
     subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
     subcategory = relationship(SubCategory)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     def serialize(self):
         return {
@@ -74,6 +90,8 @@ class Product(Base):
     subcategory = relationship(SubCategory)
     brand_id = Column(Integer, ForeignKey('brand.id'))
     brand = relationship(Brand)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     def serialize(self):
         return {

@@ -1,10 +1,18 @@
+import random
+import string
+import json
+import httplib2
+import requests
 from flask import Flask, make_response, render_template, jsonify, request, redirect, url_for, session, flash
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from database_setup import Base, Product, Product_Pics, Product_Specs, Category, Brand, SubCategory
+from database_setup import Base, Product, Product_Pics, Product_Specs, Category, Brand, SubCategory, User
 from functools import wraps
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
 
 app = Flask(__name__)
+CLIENT_ID = json.loads(open('client_id.json','r').read())['web']['client_id']
 
 # Create connection with the database
 engine = create_engine('sqlite:///catalog.db')
@@ -22,7 +30,7 @@ def user_loggedin(function):
             return function(*args, **kwargs)
         else:
             flash('You must be logged in to access this page')
-            session['last_URL'] = request.url_rule
+            session['last_URL'] = request.url
             return redirect(url_for('login'))
     return decorated_function
 
@@ -43,22 +51,163 @@ def checkIfSubCategoryExists(category_id, subcategoryName):
 def checkIfProductExists(subcategory_id, productName):
     return dbsession.query(Product).filter_by(name=productName,subcategory_id=subcategory_id).first()
 
+# Adding new users
+def createUser():
+    newUser = User(name=session['username'], email=session['email'],
+    picture=session['picture'])
+    dbsession.add(newUser)
+    dbsession.commit()
+    user = dbsession.query(User).filter_by(email=session['email']).first()
+    return user.id
+
+def getUserInfo(user_id):
+    user = dbsession.query(User).filter_by(id = user_id).first()
+    return user
+
+def getUserId(email):
+    user = dbsession.query(User).filter_by(email = email).first()
+    return user and user.id
+
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    if request.args.get('state') != session['state']:
+        response = make_response(json.dumps('invalid state parameter'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    code = request.data
+    try:
+        # Upgrade the authorization code into a credentials object
+        oauth_flow = flow_from_clientsecrets('client_id.json', scope='')
+        oauth_flow.redirect_uri = 'postmessage'
+        credentials = oauth_flow.step2_exchange(code)
+    except FlowExchangeError:
+        response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Check that access token is valid
+    access_token = credentials.access_token
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
+    http = httplib2.Http()
+    result = json.loads(http.request(url, 'GET')[1])
+
+    # If there was an error in the access token info, abort.
+    if result.get('error') is not None:
+        response = make_response(json.dumps(result.get('error')), 501)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is used for the intended user.
+    gplus_id = credentials.id_token['sub']
+    if result['user_id'] != gplus_id:
+        response = make_response(json.dumps("Token's user ID doesn't match given user ID"), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is used for this app.
+    if result['issued_to'] != CLIENT_ID:
+        response = make_response(json.dumps("Token's client ID does not match app's."), 401)
+        print "Token's client ID does not match app's."
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Check to see if the user is already logged in
+    stored_token = session.get('access_token')
+    stored_gplus_id = session.get('gplus_id')
+    if stored_token is not None and gplus_id == stored_gplus_id:
+        response = make_response(json.dumps("Current user is already connected."), 200)
+        response.headers['Content-Type'] = 'application/json'
+
+    # Store the access token in session for later use
+    session['provider'] = 'google'
+    session['access_token'] = credentials.access_token
+    session['gplus_id'] = gplus_id
+
+    # Get user info
+    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+    params = {'access_token' : credentials.access_token, 'alt': 'json'}
+    answer = requests.get(userinfo_url, params=params)
+    data = json.loads(answer.text)
+
+    session['username'] = data["name"]
+    session['picture'] = data["picture"]
+    session['email'] = data["email"]
+
+      # Log in the user
+    uid = getUserId(session['email'])
+    if not uid:
+        uid = createUser()
+    session['user_id'] = uid
+
+    output = ''
+    output+= 'Welcome, ' + session['username']
+    output+= '<img src ="' + session['picture']
+    output+= '" style = "width: 300px; height:300px;border-radius:150px; -webkit-border-radius: 150px; -moz-border-radius: 150px;">'
+    flash("You are now logged in as %s" % session['username'])
+    return output
+
+# Disconnect Revoke current user's token and reset their login_session
+@app.route('/gdisconnect')
+def gdisconnect():
+    # Only disconnect a connected user
+    access_token = session.get('access_token')
+    if access_token is None:
+        response = make_response(json.dumps('Current user not connected'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Revoke HTTP get request to revoke current token
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    http = httplib2.Http()
+    result = http.request(url, 'GET')[0]
+    if result['status'] == '200':
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        # The given token was invalid.
+        response = make_response(json.dumps('Failed to revoke token for given user'), 400)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+@app.route('/logout')
+def logout():
+    if 'provider' in session:
+        if session['provider'] == 'google':
+            gdisconnect()
+            del session['gplus_id']
+            del session['access_token']
+        if session['provider'] == 'facebook':
+            fbdisconnect()
+            del session['facebook_id']
+
+        del session['username']
+        del session['email']
+        del session['picture']
+        del session['user_id']
+        flash('You have been logged out')
+        return redirect(url_for('home'))
+    else:
+        flash('You were not logged in to begin with')
+        return redirect(url_for('home'))
+
 @app.route('/index')
 @app.route('/')
 def home():
+    if 'last_URL' in session:
+        url = session['last_URL']
+        del session['last_URL']
+        return redirect(url)
     items = dbsession.query(Category, SubCategory, Product, Product_Pics).join(SubCategory, Product, Product_Pics).limit(3).all()
-    session['username'] = "Blah"
     return render_template('home.html', items=items, count=len(items))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         return redirect(url_for(session['last_URL']))
-    return render_template('login.html')
-
-@app.route('/logout')
-def logout():
-    return redirect(url_for('home'))
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    session['state'] = state
+    return render_template('login.html', STATE=state)
 
 # CRUD operations for category
 @app.route('/catalog/<category_param>/')
@@ -78,7 +227,7 @@ def addCategory():
         categoryName = request.form.get("cat_name")
         if categoryName:
             if not checkIfCategoryExists(categoryName):
-                newCategory = Category(name=categoryName)
+                newCategory = Category(name=categoryName, user_id=session['username'])
                 db_add_commit(newCategory)
                 flash('New category added: %s' % newCategory.name)
                 return redirect(url_for('home'))
@@ -172,7 +321,7 @@ def addSubCategory(category_param):
             # Check if the user has entered name and description
             if subcategory_Name and subcategory_Desc:
                 if not checkIfSubCategoryExists(category.id, subcategory_Name):
-                    subcategory = SubCategory(name=subcategory_Name, description=subcategory_Desc, category_id=category.id)
+                    subcategory = SubCategory(name=subcategory_Name, description=subcategory_Desc, category_id=category.id, user_id=session['username'])
                     db_add_commit(subcategory)
                     flash('Added %s > %s' % (category.name, subcategory_Name))
                     return redirect(url_for('home'))
@@ -236,9 +385,9 @@ def showProduct(category_param, subcategory_param, product_param):
             product = dbsession.query(Product).filter_by(name=product_param, subcategory_id=subcategory.id).first()
             if product:
                 brand = dbsession.query(Brand).filter_by(id=product.brand_id).first()
-                pic = dbsession.query(Product_Pics).filter_by(product_id=product.id)
-                product_specs = dbsession.query(Product_Specs).filter_by(product_id=product.id)
-                return render_template('showProduct.html', product=product, brand=brand, product_pic=pic, product_specs=product_specs, category=category, subcategory=subcategory)
+                pic = dbsession.query(Product_Pics).filter_by(product_id=product.id).first()
+                product_specs = dbsession.query(Product_Specs).filter_by(product_id=product.id).first()
+                return render_template('showProduct.html', product=product, brand=brand, product_pic=pic.picture, product_specs=product_specs, category=category, subcategory=subcategory)
             else:
                 flash('Invalid Product: %s' % product_param)
         else:
@@ -300,7 +449,7 @@ def addProduct(category_param, subcategory_param):
                     if not brand:
                         brand = Brand(name=brand_name, subcategory_id=subcategory.id)
                         db_add_commit(brand)
-                    product = Product(name=product_name, description=product_desc, subcategory_id=subcategory.id, brand_id=brand.id)
+                    product = Product(name=product_name, description=product_desc, subcategory_id=subcategory.id, brand_id=brand.id, user_id=session['username'])
                     db_add_commit(product)
                     if product_pic:
                         pic = Product_Pics(picture=product_pic, product_id=product.id)
