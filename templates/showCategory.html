@@ -3,7 +3,7 @@
     <p><a href={{url_for( 'showCategory', category_param=category.name)}}>{{category.name}}</a></p>
     <h1 class="jumbotron">{{category.name}}</h1> {% if session['username'] %}
     <div class="row">
-    <div class="text-right"><a href={{url_for( 'addCategory')}}><span class="glyphicon glyphicon-plus"></span> Add</a> <a href={{url_for( 'editCategory', category_id=category.id)}}><span class="glyphicon glyphicon-pencil"></span> Edit</a></div>
+        <div class="text-right"><a href={{url_for( 'addCategory')}}><span class="glyphicon glyphicon-plus"></span> Add</a> <a href={{url_for( 'editCategory', category_id=category.id)}}><span class="glyphicon glyphicon-pencil"></span> Edit</a></div>
     </div>
     {% endif %}
     <div class="row">
@@ -11,10 +11,26 @@
         <div class="col-md-10">
             <h1>SubCategories</h1>
             <div class="row">
-                <div class="col-md-6">
+                {% if session['username'] %}
+                <div class="col-md-12">
+                    <a href={{url_for( 'addSubCategory', category_param=category.name)}}>Create New SubCategory</a>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="col-md-12">
                     <ul class="product-font">
                         {% for subcategory in subcategories %}
-                        <li><a href={{url_for( 'showSubCategory', category_param=category.name, subcategory_param=subcategory.name)}}> {{subcategory.name}}</a></li>
+                        <li>
+                            <div class="col-md-6">
+                                <a href={{url_for( 'showSubCategory', category_param=category.name, subcategory_param=subcategory.name)}}> {{subcategory.name}}</a>
+                            </div>
+                            {% if session['username'] %}
+                            <div class="col-md-6 action-font">
+                                <a href={{url_for( 'editSubCategory', category_param=category.name, subcategory_param=subcategory.name)}}>Edit</a> |
+                                <a href={{url_for( 'deleteSubCategory', category_param=category.name, subcategory_id=subcategory.id)}}>Delete</a>
+                            </div>
+                            {% endif %}
+                        </li>
                         {% endfor %}
                     </ul>
                 </div>

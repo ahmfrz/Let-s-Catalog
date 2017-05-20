@@ -6,10 +6,9 @@
                 <label>Are you sure you want to delete {{item}}?</label>
                 </br>
                 <button type="submit" class="btn btn-default delete">
-                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</button> |
-                        <a href='{{url_for("home")}}'>
-                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                Back to home
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</button> |
+                <a href={{url_for("home")}}>
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Back to home
             </div>
         </form>
         </a>

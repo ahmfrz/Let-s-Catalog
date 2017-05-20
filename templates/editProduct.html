@@ -1,13 +1,11 @@
-{% extends 'layout.html' %}
-{% block content %}
+{% extends 'layout.html' %} {% block content %}
 <div class="top-margin container add-category">
     <h1>{{product.name}} <small>Edit Product</small></h1>
     <div class="col-md-8 col-sm-12">
         <form method="POST">
             <div class="form-group">
                 <label for="product_name">Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" name="product_name" placeholder= {{product.name}}>
-
+                <input type="text" class="form-control" name="product_name" placeholder={{product.name}}>
                 <label for="product_description">Description <span class="mandatory">*</span></label>
                 <textarea class="form-control" name="product_description" maxlength="500" rows="3" placeholder="{{product.description}}"></textarea>
                 <label for="brand_Name">Brand<span class="mandatory">*</span></label>
@@ -20,12 +18,12 @@
                 <input type="text" name="product_Color" class="form-control" placeholder="{{product_specs.color}}">
                 <label for="product_Pic">Picture</label>
                 <input type="text" name="product_Pic" class="form-control" placeholder="{{product_pic.picture}}">
-
-
                 <label for="subcat_name">SubCategory</label>
-                <input type="text" class="form-control" name="subcat_name" disabled value="{{subcategory_name}}">
-                <label for="cat_name">Category</label>
-                <input type="text" class="form-control" name="cat_name" disabled value="{{category_name}}">
+                <select name="subcat_name" class="form-control">
+                    {% for subcat in subcategories %}
+                    <option value={{subcat.name.replace( " ", "+")}}>{{subcat.name}}</option>
+                    {% endfor %}
+                </select>
             </div>
             {% include 'partial_edit_complete.html' %}
         </form>

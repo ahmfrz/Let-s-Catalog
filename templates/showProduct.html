@@ -1,11 +1,10 @@
 {% extends 'layout.html' %} {% block content %}
 <div class="top-margin container">
-    <p><a href={{url_for('showCategory', category_param=category.name)}} >{{category.name}}</a> > <a href={{url_for('showSubCategory', category_param=category.name, subcategory_param=subcategory.name)}} >{{subcategory.name}}</a> > <a href={{url_for('showProduct', category_param=category.name, subcategory_param=subcategory.name, product_param=product.name)}}>{{product.name}}</a></p>
+    <p><a href={{url_for( 'showCategory', category_param=category.name)}}>{{category.name}}</a> > <a href={{url_for( 'showSubCategory', category_param=category.name, subcategory_param=subcategory.name)}}>{{subcategory.name}}</a> > <a href={{url_for( 'showProduct', category_param=category.name, subcategory_param=subcategory.name, product_param=product.name)}}>{{product.name}}</a></p>
     <h1 class="jumbotron">{{product.name}}</h1>
-    <hr>
-    {% if session['username'] %}
+    <hr> {% if session['username'] %}
     <div class="row">
-        <div class="text-right"><a href={{url_for('addProduct', category_param=category.name, subcategory_param=subcategory.name)}}><span class="glyphicon glyphicon-plus"></span> Add</a> <a href={{url_for('editProduct', category_param=category.name, subcategory_param=subcategory.name, product_param=product.name)}}><span class="glyphicon glyphicon-pencil"></span> Edit</a></div>
+        <div class="text-right"><a href={{url_for( 'addProduct', category_param=category.name, subcategory_param=subcategory.name)}}><span class="glyphicon glyphicon-plus"></span> Add</a> <a href={{url_for( 'editProduct', category_param=category.name, subcategory_param=subcategory.name, product_param=product.name)}}><span class="glyphicon glyphicon-pencil"></span> Edit</a></div>
     </div>
     {% endif %}
     <div class="row">

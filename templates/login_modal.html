@@ -1,0 +1,31 @@
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title text-center" id="myModalLabel">Log in to your account</h4>
+            </div>
+            <meta id="state" data-value={{STATE}}>
+            <div class="modal-body text-center">
+                <!-- Google -->
+                <div id="signinButton">
+                    <span class="g-signin" data-scope="openid email" data-clientid="548000053536-2j7rcq7pfm245tfo9c1fiopd3fv8qbok.apps.googleusercontent.com" data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin" data-callback="signInCallback"></span>
+                </div>
+                <div>
+                    <!-- Facebook -->
+                    <div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="true" onlogin="checkLoginState();" data-scope="public_profile,email"></div>
+                </div>
+                <div class="login-modal">
+                    <!-- Github -->
+                    <button class="login-Button">
+                        <a href='javascript:sendTokenToServerGithub()'>Login with Github</a>
+                    </button>
+                </div>
+                <div id="result"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

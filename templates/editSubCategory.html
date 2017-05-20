@@ -5,13 +5,15 @@
         <form method="POST">
             <div class="form-group">
                 <label for="sub_name">Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" name="sub_name" placeholder= {{subcategory.name}}>
-
+                <input type="text" class="form-control" name="sub_name" placeholder={{subcategory.name}}>
                 <label for="sub_description">Description <span class="mandatory">*</span></label>
                 <textarea class="form-control" name="sub_description" maxlength="500" rows="3" placeholder="{{subcategory.description}}"></textarea>
-
                 <label for="cat_name">Category</label>
-                <input type="text" class="form-control" name="cat_name" disabled value="{{category_name}}">
+                <select name="cat_name" class="form-control">
+                    {% for cat in categories %}
+                    <option value={{cat.name.replace( " ", "+")}}>{{cat.name}}</option>
+                    {% endfor %}
+                </select>
             </div>
             {% include 'partial_edit_complete.html' %}
         </form>

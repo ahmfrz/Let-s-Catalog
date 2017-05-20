@@ -1,12 +1,12 @@
-{% extends 'layout.html' %}
-{% block content %}
+{% extends 'layout.html' %} {% block content %}
 <div class="top-margin container add-category">
     <h1>{{category.name}} <small>Edit Category</small></h1>
     <div class="col-md-8 col-sm-12">
         <form method="POST">
             <div class="form-group">
                 <label for="cat_Name">Name</label>
-                <input type="text" class="form-control" name="cat_Name" placeholder= {{category.name}}>
+                <input type="text" class="form-control" name="cat_Name"
+                placeholder={{category.name}}>
             </div>
             {% include 'partial_edit_complete.html' %}
         </form>

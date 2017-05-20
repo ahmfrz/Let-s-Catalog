@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}{% block content %}
+<div class="top-margin container">
+    <h1 class="jumbotron">Categories</h1> {% if session['username'] %} {% endif %}
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-10">
+            <div class="row">
+                {% if session['username'] %}
+                <div class="col-md-12">
+                    <a href={{url_for( 'addCategory')}}>Create New Category</a>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="col-md-12">
+                    <ul class="product-font">
+                        {% for category in categories %}
+                        <li>
+                            <div class="col-md-6">
+                                <a href={{url_for( 'showCategory', category_param=category.name)}}> {{category.name}}</a>
+                            </div>
+                            {% if session['username'] %}
+                            <div class="col-md-6 action-font">
+                                <a href={{url_for( 'editCategory', category_id=category.id)}}>Edit</a> |
+                                <a href={{url_for( 'deleteCategory', category_id=category.id)}}>Delete</a>
+                            </div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

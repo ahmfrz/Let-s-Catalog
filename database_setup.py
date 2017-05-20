@@ -1,6 +1,7 @@
 """ The product specs entity """
 
-from sqlalchemy import Column, String, ForeignKey, Integer, TEXT
+import datetime
+from sqlalchemy import Column, String, ForeignKey, Integer, TEXT, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -26,6 +27,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
@@ -44,6 +46,7 @@ class SubCategory(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
     description = Column(TEXT(500))
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -65,6 +68,7 @@ class Brand(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
     subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
     subcategory = relationship(SubCategory)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -86,6 +90,7 @@ class Product(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
     description = Column(TEXT(500), nullable=False)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
     subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
     subcategory = relationship(SubCategory)
     brand_id = Column(Integer, ForeignKey('brand.id'))

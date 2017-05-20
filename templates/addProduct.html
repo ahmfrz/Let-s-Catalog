@@ -18,6 +18,12 @@
                 <input type="text" name="product_Color" class="form-control" placeholder="Color of the Product">
                 <label for="product_Pic">Picture</label>
                 <input type="text" name="product_Pic" class="form-control" placeholder="URL of the picture of product">
+                <label for="subcat_name">SubCategory</label>
+                <select name="subcat_name" class="form-control">
+                    {% for subcat in subcategories %}
+                    <option value={{subcat.name.replace( " ", "+")}}>{{subcat.name}}</option>
+                    {% endfor %}
+                </select>
             </div>
             <button class="btn btn-default" type="submit">Submit</button>
         </form>
