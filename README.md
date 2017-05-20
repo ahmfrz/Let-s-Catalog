@@ -26,14 +26,15 @@ Catalog application in Flask with SqlAlchemy
  
 ### Steps
  1. Download/ Fork(Find steps for forking in 'How to Contribute' section) this repository in /vagrant/catalog directory
- 2. Open Git Bash or your favorite command line tool and run following commands:
+ 2. Replace 'YOUR_APP_ID' and 'YOUR_CLIENT_SECRET' strings with actual app_id and secret key of your app
+ 3. Open Git Bash or your favorite command line tool and run following commands:
       vagrant up
       vagrant ssh
- 3. Navigate to /vagrant/catalog directory
- 4. Run following command in virtual machine:
+ 4. Navigate to /vagrant/catalog directory
+ 5. Run following command in virtual machine:
       python app.py
- 4. Open Chrome(Or any other browser) and navigate to 'http://localhost:8000/'
- 5. Verify that Catalog webpage is displayed
+ 6. Open Chrome(Or any other browser) and navigate to 'http://localhost:8000/'
+ 7. Verify that Catalog webpage is displayed
  
 ## Resources
 
