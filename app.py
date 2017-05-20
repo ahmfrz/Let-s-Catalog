@@ -409,10 +409,10 @@ def addCategory():
                 return redirect(url_for('home'))
             else:
                 flash('Category already exists')
-                return render_template('addCategory.html')
+                return redirect(url_for('addCategory'))
         else:
             flash('Category name must not be empty')
-            return render_template('addCategory.html')
+            return redirect(url_for('addCategory'))
     else:
         return render_template('addCategory.html')
 
@@ -446,9 +446,10 @@ def editCategory(category_id):
         if name:
             category.name = name
             flash('Category updated %s' % category.name)
+            return redirect(url_for('home'))
         else:
             flash('Category name must not be empty')
-            return render_template('editCategory.html')
+            return redirect(url_for('editCategory', category_id=category_id))
     else:
         return render_template('editCategory.html', category=category)
 
@@ -639,8 +640,7 @@ def showProduct(category_param, subcategory_param, product_param):
     return redirect(url_for('home'))
 
 
-@app.route('''/catalog/<category_param>/<subcategory_param>
-    /<brand_param>/products''')
+@app.route('/catalog/<category_param>/<subcategory_param>/<brand_param>/products')
 def showProductsByBrand(category_param, subcategory_param, brand_param):
     category = dbsession.query(Category).filter_by(name=category_param).first()
     if category:
@@ -741,22 +741,21 @@ def addProduct(category_param, subcategory_param):
                     return redirect(url_for('home'))
                 else:
                     flash('Product already exists')
-                    return redirect('addProduct',
+                    return redirect(url_for('addProduct',
                                     category_param=category_param,
-                                    subcategory_param=subcategory_param)
+                                    subcategory_param=subcategory_param))
             else:
                 flash('Fields marked with * are mandatory')
-                return redirect('addProduct',
+                return redirect(url_for('addProduct',
                                 category_param=category_param,
-                                subcategory_param=subcategory_param)
+                                subcategory_param=subcategory_param))
         else:
             # Render add product page
             return render_template('addProduct.html',
                                    subcategories=subcategories)
 
 
-@app.route('''/catalog/<category_param>/<subcategory_param>/
-    product/delete/<int:product_id>''',
+@app.route('/catalog/<category_param>/<subcategory_param>/product/delete/<int:product_id>',
            methods=['GET', 'POST'])
 @user_loggedin
 def deleteProduct(category_param, subcategory_param, product_id):
@@ -778,8 +777,7 @@ def deleteProduct(category_param, subcategory_param, product_id):
         return render_template('confirmDelete.html', item=product.name)
 
 
-@app.route('''/catalog/<category_param>/<subcategory_param>/
-    product/edit/<product_param>''', methods=['GET', 'POST'])
+@app.route('/catalog/<category_param>/<subcategory_param>/product/edit/<product_param>', methods=['GET', 'POST'])
 @user_loggedin
 def editProduct(category_param, subcategory_param, product_param):
     category = dbsession.query(Category).filter_by(name=category_param).first()
@@ -838,9 +836,9 @@ def editProduct(category_param, subcategory_param, product_param):
                     brand = Brand(name=brand_name,
                                   subcategory_id=subcategory.id)
                 if product_pic:
-                    pic.picture = Product_pic
+                    pic.picture = product_pic
                 product_specs.model_name = model_name
-                product_specs.model_number = model_number,
+                product_specs.model_number = model_number
                 product_specs.color = product_color
                 dbsession.commit()
                 flash('Product updated %s > %s > %s' %
@@ -848,16 +846,16 @@ def editProduct(category_param, subcategory_param, product_param):
                 return redirect(url_for('home'))
             else:
                 flash('Product already exists')
-                return redirect('editProduct',
+                return redirect(url_for('editProduct',
                                 category_param=category_param,
                                 subcategory_param=subcategory_param,
-                                product_param=product_param)
+                                product_param=product_param))
         else:
             flash('Fields marked with * are mandatory')
-            return redirect('editProduct',
+            return redirect(url_for('editProduct',
                             category_param=category_param,
                             subcategory_param=subcategory_param,
-                            product_param=product_param)
+                            product_param=product_param))
     else:
         return render_template('editProduct.html',
                                product=product,
