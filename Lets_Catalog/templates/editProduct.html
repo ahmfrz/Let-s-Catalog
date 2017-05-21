@@ -5,19 +5,19 @@
         <form method="POST">
             <div class="form-group">
                 <label for="product_name">Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" name="product_name" placeholder={{product.name}}>
+                <input type="text" class="form-control" name="product_name" value={{product.name}}>
                 <label for="product_description">Description <span class="mandatory">*</span></label>
-                <textarea class="form-control" name="product_description" maxlength="500" rows="3" placeholder="{{product.description}}"></textarea>
+                <textarea class="form-control" name="product_description" maxlength="500" rows="3">{{product.description}}</textarea>
                 <label for="brand_Name">Brand<span class="mandatory">*</span></label>
-                <input type="text" name="brand_name" class="form-control" placeholder="{{brand.name}}">
+                <input type="text" name="brand_name" class="form-control" value="{{brand.name}}">
                 <label for="model_name">Model<span class="mandatory">*</span></label>
-                <input type="text" name="model_name" class="form-control" placeholder="{{product_specs.model_name}}">
+                <input type="text" name="model_name" class="form-control" value="{{product_specs.model_name}}">
                 <label for="model_number">Model Number<span class="mandatory">*</span></label>
-                <input type="text" name="model_number" class="form-control" placeholder="{{product_specs.model_number}}">
+                <input type="text" name="model_number" class="form-control" value="{{product_specs.model_number}}">
                 <label for="product_color">Color<span class="mandatory">*</span></label>
-                <input type="text" name="product_color" class="form-control" placeholder="{{product_specs.color}}">
+                <input type="text" name="product_color" class="form-control" value="{{product_specs.color}}">
                 <label for="product_pic">Picture</label>
-                <input type="text" name="product_pic" class="form-control" placeholder="{{product_pic.picture}}">
+                <input type="text" name="product_pic" class="form-control" value="{{product_pic.picture}}">
                 <label for="subcat_name">SubCategory</label>
                 <select name="subcat_name" class="form-control">
                     {% for subcat in subcategories %}

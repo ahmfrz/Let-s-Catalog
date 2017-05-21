@@ -5,9 +5,9 @@
         <form method="POST">
             <div class="form-group">
                 <label for="sub_name">Name <span class="mandatory">*</span></label>
-                <input type="text" class="form-control" name="sub_name" placeholder={{subcategory.name}}>
+                <input type="text" class="form-control" name="sub_name" value={{subcategory.name}}>
                 <label for="sub_description">Description <span class="mandatory">*</span></label>
-                <textarea class="form-control" name="sub_description" maxlength="500" rows="3" placeholder="{{subcategory.description}}"></textarea>
+                <textarea class="form-control" name="sub_description" maxlength="500" rows="3">{{subcategory.description}}</textarea>
                 <label for="cat_name">Category</label>
                 <select name="cat_name" class="form-control">
                     {% for cat in categories %}
