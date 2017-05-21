@@ -1,9 +1,9 @@
 # Let-s-Catalog
 Catalog application in Flask with SqlAlchemy
- 
+
 ## What is it?
  Catalog application where users can add and share their favorite catalog items
- 
+
 ## Features
  * Uses Flask
  * Uses OAuth2
@@ -13,17 +13,17 @@ Catalog application in Flask with SqlAlchemy
  * Provides JSON endpoints
  * About page is a responsive portfolio page of the author, source code is available at - https://github.com/ahmfrz/Portfolio-Site/
  * etc
- 
+
 ## Installation steps
  Please follow the steps below:
- 
+
 ### Pre-requisites:
  * Python 2.7 - https://www.python.org/downloads/
  * Any text editor for editing the code(Sublime text preferred - https://www.sublimetext.com/download)
  * Oracle Virtual Box - https://www.virtualbox.org/wiki/Downloads
  * Vagrant - https://www.vagrantup.com/downloads.html
  * Vagrant Configuration - https://github.com/udacity/fullstack-nanodegree-vm
- 
+
 ### Steps
  1. Download/ Fork(Find steps for forking in 'How to Contribute' section) this repository in /vagrant/catalog directory
  2. Replace 'YOUR_APP_ID' and 'YOUR_CLIENT_SECRET' strings with actual app_id and secret key of your app
@@ -31,11 +31,12 @@ Catalog application in Flask with SqlAlchemy
       vagrant up
       vagrant ssh
  4. Navigate to /vagrant/catalog directory
- 5. Run following command in virtual machine:
-      python app.py
+ 5. Run following commands in virtual machine:
+      pip install -e .
+      flask run -h 0.0.0.0 -p 8000
  6. Open Chrome(Or any other browser) and navigate to 'http://localhost:8000/'
  7. Verify that Catalog webpage is displayed
- 
+
 ## Resources
 
 * [Bootstrap documentation](http://getbootstrap.com/) - Helpful documentation.
