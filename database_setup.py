@@ -1,10 +1,9 @@
-""" The product specs entity """
-
 import datetime
 from sqlalchemy import Column, String, ForeignKey, Integer, TEXT, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+from sqlalchemy.orm import backref
 
 # Create an instance of declarative base
 Base = declarative_base()
@@ -20,6 +19,7 @@ class User(Base):
     email = Column(String(100), nullable=False)
     picture = Column(String(250))
 
+
 class Category(Base):
     ''' Defines category table and columns '''
 
@@ -33,8 +33,8 @@ class Category(Base):
 
     def serialize(self):
         return {
-        'id': self.id,
-        'name': self.name
+            'id': self.id,
+            'name': self.name
         }
 
 
@@ -48,16 +48,17 @@ class SubCategory(Base):
     description = Column(TEXT(500))
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship(Category)
+    category = relationship(Category, backref=backref(
+        "subs", cascade="all, delete-orphan"))
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
     def serialize(self):
         return {
-        'id': self.id,
-        'name': self.name,
-        'description': self.description,
-        'category_id':self.category_id
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'category_id': self.category_id
         }
 
 
@@ -76,9 +77,9 @@ class Brand(Base):
 
     def serialize(self):
         return {
-        'id': self.id,
-        'name': self.name,
-        'subcategory_id' : self.subcategory_id
+            'id': self.id,
+            'name': self.name,
+            'subcategory_id': self.subcategory_id
         }
 
 
@@ -92,7 +93,8 @@ class Product(Base):
     description = Column(TEXT(500), nullable=False)
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
     subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
-    subcategory = relationship(SubCategory)
+    subcategory = relationship(SubCategory, backref=backref(
+        "products", cascade="all, delete-orphan"))
     brand_id = Column(Integer, ForeignKey('brand.id'))
     brand = relationship(Brand)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -100,12 +102,13 @@ class Product(Base):
 
     def serialize(self):
         return {
-        'id': self.id,
-        'name': self.name,
-        'description' : self.description,
-        'brand_id' : self.brand_id,
-        'subcategory_id' : self.subcategory_id
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'brand_id': self.brand_id,
+            'subcategory_id': self.subcategory_id
         }
+
 
 class Product_Pics(Base):
     ''' Defines product pics table and columns '''
@@ -115,7 +118,8 @@ class Product_Pics(Base):
     id = Column(Integer, primary_key=True)
     picture = Column(TEXT(250))
     product_id = Column(Integer, ForeignKey('product.id'))
-    product = relationship(Product)
+    product = relationship(Product, backref=backref(
+        "pics", cascade="all, delete-orphan"))
 
 
 class Product_Specs(Base):
@@ -128,7 +132,8 @@ class Product_Specs(Base):
     model_name = Column(String(100), nullable=False)
     color = Column(String(50), nullable=False)
     product_id = Column(Integer, ForeignKey('product.id'))
-    product = relationship(Product)
+    product = relationship(Product, backref=backref(
+        "specs", cascade="all, delete-orphan"))
 
 # Create sqlite engine for simple local db
 engine = create_engine("sqlite:///catalog.db")
