@@ -12,6 +12,9 @@ app.register_blueprint(views.product.product_page)
 app.register_blueprint(views.json_endpoint.json_page)
 app.secret_key = 'super_secret_key'
 
+if __name__ == "__main__":
+    app.run()
+
 __author__ = "Ahmed Faraz Ansari"
 __copyright__ = "Copyright 2017 (c) ahmfrz"
 
