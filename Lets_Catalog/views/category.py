@@ -114,7 +114,7 @@ def editCategory(category_id):
         name = request.form.get('cat_Name')
         if name:
             # Check if the category name is taken
-            if not helper_methods.checkIfCategoryExists(categoryName):
+            if name == category.name or not helper_methods.checkIfCategoryExists(name):
                 category.name = name
                 flash('Category updated %s' % category.name)
                 return redirect(url_for('home_page.home'))

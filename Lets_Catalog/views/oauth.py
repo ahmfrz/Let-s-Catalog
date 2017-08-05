@@ -228,7 +228,7 @@ def gitConnect():
                          'github_client_secret.json'), 'r').read())['web']
     client_id = github_secret['client_id']
     client_secret = github_secret['client_secret']
-    redirect_uri = "http://localhost:8000"
+    redirect_uri = "http://localhost:8080"
     url = 'https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s' % (
         client_id, client_secret, code, redirect_uri)
     h = httplib2.Http()

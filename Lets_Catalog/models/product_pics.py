@@ -12,7 +12,7 @@ class Product_Pics(Base):
     __tablename__ = "product_pics"
 
     id = Column(Integer, primary_key=True)
-    picture = Column(TEXT(250))
+    picture = Column(TEXT)
     product_id = Column(Integer, ForeignKey('product.id'))
     product = relationship(Product, backref=backref(
         "pics", cascade="all, delete-orphan"))

@@ -6,7 +6,7 @@ from sqlalchemy import Column, String, Integer
 class User(Base):
     ''' Defines product specs table and columns '''
 
-    __tablename__ = 'user'
+    __tablename__ = 'cataloguser'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)

@@ -16,14 +16,14 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
-    description = Column(TEXT(500), nullable=False)
+    description = Column(TEXT, nullable=False)
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
     subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
     subcategory = relationship(SubCategory, backref=backref(
         "products", cascade="all, delete-orphan"))
     brand_id = Column(Integer, ForeignKey('brand.id'))
     brand = relationship(Brand)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('cataloguser.id'))
     user = relationship(User)
 
     def serialize(self):

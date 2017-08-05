@@ -15,12 +15,12 @@ class SubCategory(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
-    description = Column(TEXT(500))
+    description = Column(TEXT)
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category, backref=backref(
         "subs", cascade="all, delete-orphan"))
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('cataloguser.id'))
     user = relationship(User)
 
     def serialize(self):

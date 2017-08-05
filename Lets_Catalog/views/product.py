@@ -323,7 +323,7 @@ def editProduct(category_param, subcategory_param, product_param):
                     subcategories)[0]
 
             # Check if the product name is taken under this subcategory
-            if not helper_methods.checkIfProductExists(
+            if product_name == product_param or not helper_methods.checkIfProductExists(
                     subcategory.id, product_name):
                 product.name = product_name
                 product.description = product_desc
@@ -334,14 +334,19 @@ def editProduct(category_param, subcategory_param, product_param):
                     brand = Brand(name=brand_name,
                                   subcategory_id=subcategory.id)
                 if product_pic:
-                    pic.picture = product_pic
+                    if not pic:
+                        pic = Product_Pics(
+                            picture=product_pic, product_id=product.id)
+                        helper_methods.db_add_commit(pic)
+                    else:
+                        pic.picture = product_pic
                 product_specs.model_name = model_name
                 product_specs.model_number = model_number
                 product_specs.color = product_color
                 dbsession.commit()
                 flash('Product updated %s > %s > %s' %
                       (category_param, subcategory_param, product.name))
-                return redirect(url_for('home_page.home_page.home'))
+                return redirect(url_for('home_page.home'))
             else:
                 flash('Product already exists')
                 return redirect(url_for('product_page.editProduct',

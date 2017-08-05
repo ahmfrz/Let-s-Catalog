@@ -17,7 +17,7 @@ class Brand(Base):
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
     subcategory_id = Column(Integer, ForeignKey('subcategory.id'))
     subcategory = relationship(SubCategory)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('cataloguser.id'))
     user = relationship(User)
 
     def serialize(self):

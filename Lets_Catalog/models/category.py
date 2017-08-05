@@ -14,7 +14,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(150), nullable=False)
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('cataloguser.id'))
     user = relationship(User)
 
     def serialize(self):

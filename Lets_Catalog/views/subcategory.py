@@ -203,8 +203,8 @@ def editSubCategory(category_param, subcategory_param):
                 category = filter(lambda cat: cat.name ==
                                   category_name, categories)[0]
             # Check if the subcategory name is taken
-            if not helper_methods.checkIfSubCategoryExists(
-                    category.id, subcategory_Name):
+            if subcategory_name == subcategory_param or not helper_methods.checkIfSubCategoryExists(
+                    category.id, subcategory_name):
                 subcategory.name = subcategory_name
                 subcategory.description = subcategory_desc
                 subcategory.category_id = category and category.id

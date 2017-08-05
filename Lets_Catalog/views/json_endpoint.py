@@ -1,5 +1,6 @@
 """Defines JSON endpoints"""
 
+import json
 from .. models.category import Category
 from .. models.subcategory import SubCategory
 from .. models.product import Product
@@ -8,7 +9,7 @@ from .. models.product_pics import Product_Pics
 from .. models.product_specs import Product_Specs
 from .. models.db_session import dbsession
 from .. infrastructure import helper_methods
-from flask import render_template, Blueprint, session, redirect, jsonify
+from flask import render_template, Blueprint, session, redirect, jsonify, make_response
 
 json_page = Blueprint('json_page', __name__,
                       template_folder='templates')
@@ -46,7 +47,7 @@ def getCategoryJSON():
     '''Get all categories'''
     categories = dbsession.query(Category).all()
     if not categories:
-        return make_response(json.dumps('Invalid URL'), 401)
+        return make_response(json.dumps('No categories found'), 401)
     return jsonify(categories=[i.serialize() for i in categories])
 
 
