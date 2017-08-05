@@ -333,13 +333,13 @@ def editProduct(category_param, subcategory_param, product_param):
                 if not brand:
                     brand = Brand(name=brand_name,
                                   subcategory_id=subcategory.id)
-                if product_pic:
-                    if not pic:
-                        pic = Product_Pics(
-                            picture=product_pic, product_id=product.id)
-                        helper_methods.db_add_commit(pic)
-                    else:
-                        pic.picture = product_pic
+                if not pic:
+                    pic = Product_Pics(
+                        picture=product_pic, product_id=product.id)
+                    helper_methods.db_add_commit(pic)
+                else:
+                    pic.picture = product_pic
+
                 product_specs.model_name = model_name
                 product_specs.model_number = model_number
                 product_specs.color = product_color
