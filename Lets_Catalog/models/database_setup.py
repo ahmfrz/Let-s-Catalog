@@ -8,8 +8,16 @@ Base = declarative_base()
 
 # Create postgres engine for db
 connectionString = 'postgresql://{}:{}@{}:{}/{}'
-connectionString = connectionString.format('catalogdb', '12345', 'localhost', 5432, 'catalogdb')
+connectionString = connectionString.format('catalog', 'pw', 'localhost', 5432, 'catalogdb')
 engine = create_engine(connectionString)
+
+#from product_pics import *
+#from product_specs import *
+#from product import *
+#from brand import *
+#from subcategory import *
+#from category import *
+#from user import *
 
 # Create all tables
 Base.metadata.create_all(engine)

@@ -24,7 +24,7 @@ function loadData() {
         $nav_Categories.text("Failed to get Category resources");
     }, 8000);
 
-    var catalogURL = "http://localhost:8080/api/v1/catalog.json";
+    var catalogURL = "http://13.126.141.232/api/v1/catalog.json";
     $.ajax({
         url: catalogURL,
         dataType: 'json',
@@ -40,7 +40,7 @@ function loadData() {
             // Parse data
             for (var i = 0; i < count; i++) {
                 var category = data.Categories[i].name;
-                $nav_Categories.append("<td><a href='http://localhost:8080/catalog/" + category + "'>" + category + "</td>");
+                $nav_Categories.append("<td><a href='http://13.126.141.232/catalog/" + category + "'>" + category + "</td>");
 
                 $nav_SubCategories.append("<td id='tsub_" + i + "'></td>");
                 $("#tsub_" + i).append("<ul class='nav-catalog-list' id='sub_" + i + "'></ul>");
@@ -51,11 +51,11 @@ function loadData() {
                 var sub_count = data.Categories[i].data.length > 5 ? 5 : data.Categories[i].data.length;
                 for (var s = 0; s < sub_count; s++) {
                     sub = data.Categories[i].data[s].name;
-                    $("#sub_" + i).append("<li><a href='http://localhost:8080/catalog/" + category + "/" + sub + "'>" + sub + "</li>");
+                    $("#sub_" + i).append("<li><a href='http://13.126.141.232/catalog/" + category + "/" + sub + "'>" + sub + "</li>");
                     data.Brands.forEach(function(item) {
                         if (item.name == sub && item.data.length > 0) {
                             brand = item.data[0].name;
-                            $("#brand_" + i).append("<li><a href='http://localhost:8080/catalog/" + category + "/" + sub + "/" + brand + "/products'>" + brand + "</li>");
+                            $("#brand_" + i).append("<li><a href='http://13.126.141.232/catalog/" + category + "/" + sub + "/" + brand + "/products'>" + brand + "</li>");
                         }
                     })
                 }
@@ -174,7 +174,7 @@ function statusChangeCallback(response) {
 // Github
 function sendTokenToServerGithub() {
     state = $("#state").data().value;
-    var url = "https://github.com/login/oauth/authorize?client_id=dd0a2c1a63b1ff4d0f57&type=user_agent&redirect_uri=http://localhost:8080/gitconnect?state=" + state;
+    var url = "https://github.com/login/oauth/authorize?client_id=dd0a2c1a63b1ff4d0f57&type=user_agent&redirect_uri=http://13.126.141.232/gitconnect?state=" + state;
     window.location = url;
 }
 

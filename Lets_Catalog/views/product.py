@@ -168,7 +168,7 @@ def addProduct(category_param, subcategory_param):
                 # Check if the user has changed original subcategory
                 if subcat_name != subcategory_param:
                     subcategory = filter(
-                        lambda subcat: subcat.name == subcategory_name,
+                        lambda subcat: subcat.name == subcat_name,
                         subcategories)[0]
 
                 # Check if the product name is taken

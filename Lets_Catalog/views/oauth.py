@@ -228,7 +228,7 @@ def gitConnect():
                          'github_client_secret.json'), 'r').read())['web']
     client_id = github_secret['client_id']
     client_secret = github_secret['client_secret']
-    redirect_uri = "http://localhost:8080"
+    redirect_uri = "http://13.126.141.232/"
     url = 'https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s&redirect_uri=%s' % (
         client_id, client_secret, code, redirect_uri)
     h = httplib2.Http()
@@ -243,9 +243,10 @@ def gitConnect():
     response, content = h.request(url, 'GET')
 
     data = json.loads(content)
+
     if 'error' in data:
         response = make_response(json.dumps(
-            'Error occurred while getting user data from facebook'), 401)
+            'Error occurred while getting user data from Github'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -288,3 +289,4 @@ def logout():
     else:
         flash('You were not logged in to begin with')
         return redirect(url_for('home_page.home'))
+

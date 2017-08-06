@@ -1,9 +1,10 @@
 """Defines subcategory table"""
 
 import datetime
+from database_setup import Base
 from category import Category
 from user import User
-from database_setup import Base
+#from database_setup import Base
 from sqlalchemy import Column, String, ForeignKey, Integer, TEXT, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import backref
